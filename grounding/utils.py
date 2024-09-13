@@ -8,7 +8,7 @@ def encode_image(image_path):
         return base64.b64encode(image_file.read()).decode('utf-8')
 
 
-def visulize(image_path, xyxy= [[350, 400], [750, 820]]):
+def visulize(image_path, xyxy=[[102, 505], [324, 860]]):
     img = cv2.imread(image_path)
 
     img_w, img_h = img.shape[1], img.shape[0]

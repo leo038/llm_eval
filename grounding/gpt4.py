@@ -1,4 +1,4 @@
-from ..api_key import OPENAI_API_KEY
+from api_key import OPENAI_API_KEY
 import os
 from openai import OpenAI
 from utils import encode_image
@@ -10,7 +10,7 @@ def gpt4_grounding(text_prompt="What’s in this image?", input_image=None):
     client = OpenAI()
 
     base64_image = encode_image(image_path=input_image)
-    model = "gpt-4o"
+    model = "gpt-4o-mini"
 
     response = client.chat.completions.create(
         model=model,
@@ -40,13 +40,14 @@ def gpt4_grounding(text_prompt="What’s in this image?", input_image=None):
 
 if __name__ == "__main__":
     gpt4_grounding(text_prompt="从这张图中找到小狗的左上角和右下角的像素坐标，输出如下格式的结果：[[102,505],[324,860]]",
-                   input_image="./dog_and_girl.jpeg")
+                   input_image="image/dog_and_girl.jpeg")
 
 """
 模型输出： 
 
 
 gpt4o-mini:  抱歉，我无法处理该请求。
+gpt4o-mini:  第二次运行输出：抱歉，我无法处理图片内容以提取特定像素坐标。
 gpt4o:  [[262, 222], [657, 683]]
 gpt4o: 第二次运行输出：  对于这张图片，假设其大小是标准的1920x1080像素，则可以估算小狗的左上角和右下角的坐标大致如下：
 

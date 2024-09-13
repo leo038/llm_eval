@@ -1,43 +1,55 @@
+from openai import OpenAI
+
+from api_key import YI_API_KEY
+from utils import encode_image
+
+API_BASE = "https://api.lingyiwanwu.com/v1"
+API_KEY = YI_API_KEY
 
 
-def yi_vision_api(PROMPT='帮我把红色方块放在钢笔上', img_path='temp/vl_now.jpg'):
-    '''
-    零一万物大模型开放平台，yi-vision视觉语言多模态大模型API
-    '''
-
+def yi_vision_grounding(text_prompt="What’s in this image?", input_image=None):
     client = OpenAI(
-        api_key=YI_KEY,
-        base_url="https://api.lingyiwanwu.com/v1"
+        api_key=API_KEY,
+        base_url=API_BASE
     )
 
-    # 编码为base64数据
-    with open(img_path, 'rb') as image_file:
-        image = 'data:image/jpeg;base64,' + base64.b64encode(image_file.read()).decode('utf-8')
+    model = "yi-vision"
 
-    # 向大模型发起请求
-    completion = client.chat.completions.create(
-        model="yi-vision",
+    base64_image = encode_image(image_path=input_image)
+
+    response = client.chat.completions.create(
+        model=model,
         messages=[
             {
                 "role": "user",
                 "content": [
-                    {
-                        "type": "text",
-                        "text": SYSTEM_PROMPT + PROMPT
-                    },
+                    {"type": "text",
+                     "text": text_prompt
+                     },
                     {
                         "type": "image_url",
                         "image_url": {
-                            "url": image
-                        }
-                    }
-                ]
-            },
-        ]
+                            "url": f"data:image/jpeg;base64,{base64_image}",
+                        },
+                    },
+                ],
+            }
+        ],
+        max_tokens=300,
     )
 
-    # 解析大模型返回结果
-    result = eval(completion.choices[0].message.content.strip())
-    print('    大模型调用成功！')
+    res = response.choices[0].message.content
 
-    return result
+    print(f"model: {model}, text_prompt:{text_prompt}, input_image: {input_image},output: {res}")
+
+    return res
+
+if __name__ == "__main__":
+    yi_vision_grounding(text_prompt="从这张图中找到小狗的左上角和右下角的像素坐标，输出如下格式的结果：[[102,505],[324,860]]",
+                   input_image="image/dog_and_girl.jpeg")
+
+
+"""
+输出：
+[[102, 505], [324, 860]]
+"""
